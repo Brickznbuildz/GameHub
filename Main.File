@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Black and Orange Website</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: Arial, sans-serif;
+            color: orange; /* Change the text color to orange */
+            background: #000;
+        }
+
+        .background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(45deg, #ff4500, #000000);
+            background-size: 200% 200%;
+            animation: moveBackground 10s linear infinite;
+            z-index: -1;
+        }
+
+        @keyframes moveBackground {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+        }
+
+        .time {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            color: orange; /* Time text color */
+            font-size: 1.5em;
+        }
+
+        h1 {
+            font-size: 4em;
+            margin: 0.2em;
+        }
+
+        p {
+            font-size: 1.5em;
+        }
+
+        a {
+            color: orange; /* Change the link text color to orange */
+            text-decoration: none;
+            font-size: 1.2em;
+            border: 2px solid orange; /* Change the link border color to orange */
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        a:hover {
+            background: orange; /* Change the link background color to orange on hover */
+            color: #000;
+        }
+
+        .games-section {
+            padding: 50px;
+            background-color: #111;
+            color: orange;
+            text-align: center;
+        }
+
+        .games-section h2 {
+            font-size: 3em;
+        }
+
+        .games-section p {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .game {
+            margin: 20px 0;
+        }
+
+        .tic-tac-toe button {
+            width: 60px;
+            height: 60px;
+            font-size: 2em;
+            margin: 5px;
+            background-color: #333;
+            color: orange;
+            border: 1px solid orange;
+        }
+
+        .number-guessing input {
+            font-size: 1em;
+            padding: 5px;
+        }
+
+        .number-guessing button {
+            font-size: 1em;
+            padding: 5px 10px;
+            background-color: #333;
+            color: orange;
+            border: 1px solid orange;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="time" id="time"></div> <!-- Time display -->
+    <div class="container">
+        <h1>Welcome To The Game Hub</h1>
+        <p>This is a website created by Neev Subbaiah</p>
+        <a href="#games">Learn More</a> <!-- Updated link to navigate to the games section -->
+    </div>
+
+    <!-- New section for games and text -->
+    <div class="games-section" id="games">
+        <h2>Games and Text</h2>
+        <p>Explore a variety of games and engaging content below:</p>
+
+        <!-- Tic Tac Toe Game -->
+        <div class="game tic-tac-toe">
+            <h3>Game 1: Tic Tac Toe</h3>
+            <div id="tic-tac-toe-board"></div>
+            <button onclick="resetTicTacToe()">Reset Game</button>
+        </div>
+
+        <!-- Number Guessing Game -->
+        <div class="game number-guessing">
+            <h3>Game 2: Number Guessing Game</h3>
+            <p>Guess a number between 1 and 100:</p>
+            <input type="number" id="guess-input" min="1" max="100">
+            <button onclick="checkGuess()">Guess</button>
+            <p id="guess-result"></p>
+        </div>
+    </div>
+
+    <script>
+        // Update the time immediately and every second
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString();
+            document.getElementById('time').textContent = timeString;
+        }
+        updateTime();
+        setInterval(updateTime, 1000);
+
+        // Tic Tac Toe game logic
+        const ticTacToeBoard = document.getElementById('tic-tac-toe-board');
+        const ticTacToeSize = 3;
+        let ticTacToeState = Array(ticTacToeSize).fill().map(() => Array(ticTacToeSize).fill(null));
+        let currentPlayer = 'X';
+
+        function renderTicTacToeBoard() {
+            ticTacToeBoard.innerHTML = '';
+            for (let i = 0; i < ticTacToeSize; i++) {
+                for (let j = 0; j < ticTacToeSize; j++) {
+                    const button = document.createElement('button');
+                    button.textContent = ticTacToeState[i][j] || '';
+                    button.onclick = () => makeMove(i, j);
+                    ticTacToeBoard.appendChild(button);
+                }
+            }
+        }
+
+        function makeMove(i, j) {
+            if (!ticTacToeState[i][j]) {
+                ticTacToeState[i][j] = currentPlayer;
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                renderTicTacToeBoard();
+                checkWinner();
+            }
+        }
+
+        function checkWinner() {
+            // Check rows, columns, and diagonals for a winner
+            for (let i = 0; i < ticTacToeSize; i++) {
+                if (ticTacToeState[i][0] && ticTacToeState[i].every(cell => cell === ticTacToeState[i][0])) {
+                    alert(`${ticTacToeState[i][0]} wins!`);
+                    resetTicTacToe();
+                    return;
+                }
+                if (ticTacToeState[0][i] && ticTacToeState.every(row => row[i] === ticTacToeState[0][i])) {
+                    alert(`${ticTacToeState[0][i]} wins!`);
+                    resetTicTacToe();
+                    return;
+                }
+            }
+            if (ticTacToeState[0][0] && ticTacToeState.every((row, idx) => row[idx] === ticTacToeState[0][0])) {
+                alert(`${ticTacToeState[0][0]} wins!`);
+                resetTicTacToe();
+                return;
+            }
+            if (ticTacToeState[0][2] && ticTacToeState.every((row, idx) => row[2 - idx] === ticTacToeState[0][2])) {
+                alert(`${ticTacToeState[0][2]} wins!`);
+                resetTicTacToe();
+                return;
+            }
+        }
+
+        function resetTicTacToe() {
+            ticTacToeState = Array(ticTacToeSize).fill().map(() => Array(ticTacToeSize).fill(null));
+            currentPlayer = 'X';
+            renderTicTacToeBoard();
+        }
+
+        renderTicTacToeBoard();
+
+        // Number Guessing game logic
+        const targetNumber = Math.floor(Math.random() * 100) + 1;
+        function checkGuess() {
+            const guessInput = document.getElementById('guess-input');
+            const guessResult = document.getElementById('guess-result');
+            const guessedNumber = parseInt(guessInput.value, 10);
+
+            if (guessedNumber === targetNumber) {
+                guessResult.textContent = 'Congratulations! You guessed the right number!';
+            } else if (guessedNumber < targetNumber) {
+                guessResult.textContent = 'Too low! Try again.';
+            } else {
+                guessResult.textContent = 'Too high! Try again.';
+            }
+        }
+    </script>
+</body>
+</html>
+  
